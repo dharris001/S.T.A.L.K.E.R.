@@ -39,7 +39,6 @@ class Reddit:
         return new_posts
 
     def message(self, post):
-
         # storing json objects for building message
         post_data = post['data']
         screen_name = post_data['author']
@@ -48,9 +47,12 @@ class Reddit:
         ts = post_data['created_utc']
         permalink = post_data["permalink"]
         pretext = f'https://reddit.com{permalink}'
+        parent_id = post_data.get('parent_id', '')
 
         # if post_data_hint exists, use submission keys
-        if 'post_data_hint' in post_data:
+        # Might be able to do this by looking at the type prefix ('t1_', 't3_', etc)
+        # https://www.reddit.com/dev/api/#fullnames
+        if 'post_data_hint' in post_data or 'post_hint' in post_data:
             title = post_data['title']
             title_link = post_data['url']
             text = post_data['selftext']
@@ -63,23 +65,50 @@ class Reddit:
             text = post_data['body']
             thumb_url = ''
 
-        # build message
-        message = {
-            'attachments': [{
-                'pretext': pretext,
-                'author_name': author_name,
-                'title': title,
-                'title_link': title_link,
-                'text': text,
-                'thumb_url': thumb_url,
-                'footer': footer,
-                'footer_icon': REDDIT_ICON,
-                'ts': ts
-            }]
-        }
+        # Start building the message
+        attachments = list()
 
-        # return formatted messag
-        return message
+        # Append message header
+        attachments.append({
+            'pretext': pretext,
+            'title': title,
+            'title_link': title_link,
+            'thumb_url': thumb_url,
+        })
+
+        # Append original comment, if it exists
+        if parent_id and parent_id.startswith('t1_'):
+            # t1_ means the parent is a comment, so lets get that text too
+            parent_comment_url = f"https://www.reddit.com/api/info.json?id={parent_id}"
+            response = requests.get(parent_comment_url, headers=REQ_HEADERS)
+            response.raise_for_status()
+            parent = response.json()['data']['children'][0]['data']
+            parent_author = f'Original comment by u/{parent["author"]}'
+            parent_text = parent['body']
+
+            attachments.append({
+                'author_name': parent_author,
+                'text': parent_text,
+                'color': 'good',
+            })
+
+        # Append target's comment
+        attachments.append({
+            'author_name': author_name,
+            'text': text,
+            'color': 'danger',
+        })
+
+        # Append footer
+        attachments.append({
+            'thumb_url': thumb_url,
+            'footer': footer,
+            'footer_icon': REDDIT_ICON,
+            'ts': ts
+        })
+
+        # return formatted message
+        return dict(attachments=attachments)
 
     def _is_new(self, post):
 
