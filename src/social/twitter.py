@@ -1,13 +1,10 @@
 # import from system
 import time
-import json
 
 # import from dependencies
 from application_only_auth import Client
-import requests
-import yaml
 
-# import config
+# import from app
 from .. import config
 
 # module constants
@@ -20,7 +17,6 @@ TWITTER_MESSAGE_REQUEST_COUNT = 10
 class Twitter:
 
     def __init__(self, user):
-
         api_key = config['auth']['twitter']['api_key']
         secret_key = config['auth']['twitter']['secret_key']
 
@@ -29,7 +25,6 @@ class Twitter:
         self.user = user
 
     def scrape(self):
-
         # build request url
         params = f'screen_name={self.user}&count={TWITTER_MESSAGE_REQUEST_COUNT}&tweet_mode=extended'
         url = f'{TWITTER_API_URL}{TWITTER_API_TIMELINE_PATH}?{params}'
@@ -46,7 +41,6 @@ class Twitter:
         return new_posts_reversed
 
     def message(self, post):
-
         # storing json objects for building message
         tweet_id = post['id']
         screen_name = post['user']['screen_name']
@@ -64,7 +58,6 @@ class Twitter:
         return message
 
     def _is_new(self, post):
-
         # if invalid dict return false
         if 'created_at' not in post:
             return False

@@ -8,9 +8,12 @@ This project was created as a learning exercise for Python, consuming REST APIs,
 
 ### Application Structure
 
-`/services/messaging.py` - Messaging service that posts to slack  
-`/services/runner` - Instantiates social classes based on social channel and calls required methods  
+`/services/slack.py` - Service for interacting with Slack API  
+`/services/db.py` - Service for interacting with SQLite3 datastore  
+`/services/webhook.py` - Starts a webhook and parses Slack Event API messages  
+`/services/runner.py` - Instantiates social classes based on social channel and calls required methods  
 `/social` - Contains social classes with respective logic  
+`/datastore` - Empty directory to bind sqlite3 docker data for persistence.  
 `/main.py` - Entry point for Python
 
 ### Getting Started
@@ -35,6 +38,12 @@ $ vi config.yml
 `Make run` - Run Stalker within Docker image  
 `Make test` - Run Pytest within Docker image  
 `Make shell` - Open Docker image at terminal
+
+###### Supported Platforms
+
+[Reddit](https://reddit.com) -
+[Twitter](https://twitter.com) -
+[Instagram](https://instagram.com)
 
 ### Author
 

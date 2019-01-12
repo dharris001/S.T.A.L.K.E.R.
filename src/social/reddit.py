@@ -1,12 +1,10 @@
 # import from system
 import time
-import json
 
 # iimport from dependencies
 import requests
-import yaml
 
-# import config
+# import from app
 from .. import config
 
 # module constants
@@ -17,12 +15,10 @@ REQ_HEADERS = { 'User-Agent': 'S.T.A.L.K.E.R. by mikeydunn' }
 class Reddit:
 
     def __init__(self, user):
-
         # initialize class props
         self.user = user
 
     def scrape(self):
-
         # build request url
         url = f'https://www.reddit.com/user/{self.user}.json'
 
@@ -35,6 +31,7 @@ class Reddit:
         # filter list of new posts
         posts = json['data']['children']
         new_posts = list(filter(self._is_new, posts))
+
         # return list of new raw posts
         return new_posts
 
@@ -111,7 +108,6 @@ class Reddit:
         return dict(attachments=attachments)
 
     def _is_new(self, post):
-
         # if invalid dict return false
         if 'created_utc' not in post['data']:
             return False

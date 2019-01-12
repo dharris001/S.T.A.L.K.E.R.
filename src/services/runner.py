@@ -1,30 +1,29 @@
-#import from application
-from .messaging import Messaging
-from ..social.reddit import Reddit
-from ..social.twitter import Twitter
+# import from application
 from ..social.instagram import Instagram
+from ..social.twitter import Twitter
+from ..social.reddit import Reddit
+from .slack import Slack
 
 class Runner:
 
-    def __init__(self, channel, user):
-
-        # store user and channel
+    def __init__(self, platform, account, channel):
+        # store account and platform
+        self.slack = Slack()
+        self.platform = platform
+        self.account = account
         self.channel = channel
-        self.user = user
-        self.messaging = Messaging()
 
     def stalk(self):
-
         # fallback if scrape fails
         post_list = []
 
-        # run social channel specific methods
-        if self.channel == 'reddit':
-            social = Reddit(self.user)
-        elif self.channel == 'twitter':
-            social = Twitter(self.user)
-        elif self.channel == 'instagram':
-            social = Instagram(self.user)
+        # run social platform specific methods
+        if self.platform == 'reddit':
+            social = Reddit(self.account)
+        elif self.platform == 'twitter':
+            social = Twitter(self.account)
+        elif self.platform == 'instagram':
+            social = Instagram(self.account)
         else:
             return
 
@@ -32,13 +31,14 @@ class Runner:
         try:
             new_posts = social.scrape()
             post_list = post_list + new_posts
+
         except Exception as e:
             error_string = str(e)
-            error_message = f'{self.channel}/{self.user}: {error_string}'
-            self.messaging.post({ 'text': error_message })
+            error_message = f'{self.platform}/{self.account}: {error_string}'
+            print(error_message)
 
         # Iterate through posts returned from scrape
-        # if post is new build message and post to slack
+        # build message and post to slack
         for post in post_list:
             message = social.message(post)
-            self.messaging.post(message)
+            self.slack.post_message(message, self.channel)
