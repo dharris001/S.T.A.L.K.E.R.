@@ -2,13 +2,15 @@
 from ..social.instagram import Instagram
 from ..social.twitter import Twitter
 from ..social.reddit import Reddit
-from .slack import Slack
+from . import slack
 
 class Runner:
 
     def __init__(self, platform, account, channel):
+        # logging
+        print(f'{platform} -- {account} -- {channel}')
+
         # store account and platform
-        self.slack = Slack()
         self.platform = platform
         self.account = account
         self.channel = channel
@@ -41,4 +43,4 @@ class Runner:
         # build message and post to slack
         for post in post_list:
             message = social.message(post)
-            self.slack.post_message(message, self.channel)
+            slack.post_message(message, self.channel)

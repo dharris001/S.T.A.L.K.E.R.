@@ -45,14 +45,7 @@ class Twitter:
         tweet_id = post['id']
         screen_name = post['user']['screen_name']
         author_link = f'https://twitter.com/{screen_name}'
-        text = f'{author_link}/status/{tweet_id}'
-
-        # build message
-        message = {
-            'text': text,
-            'unfurl_links': True,
-            'unfurl_media': True
-        }
+        message = f'{author_link}/status/{tweet_id}'
 
         # return formatted message
         return message

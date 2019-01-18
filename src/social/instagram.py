@@ -51,14 +51,7 @@ class Instagram:
         # storing json objects for building message
         latest_post = post['node']
         shortcode = latest_post["shortcode"]
-        text = f'https://www.instagram.com/p/{shortcode}'
-
-        # build message
-        message = {
-            'text': text,
-            'unfurl_links': True,
-            'unfurl_media': True
-        }
+        message = f'https://www.instagram.com/p/{shortcode}'
 
         # return formatted message
         return message

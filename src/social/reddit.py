@@ -63,10 +63,10 @@ class Reddit:
             thumb_url = ''
 
         # Start building the message
-        attachments = list()
+        message = list()
 
         # Append message header
-        attachments.append({
+        message.append({
             'pretext': pretext,
             'title': title,
             'title_link': title_link,
@@ -83,21 +83,21 @@ class Reddit:
             parent_author = f'Original comment by u/{parent["author"]}'
             parent_text = parent['body']
 
-            attachments.append({
+            message.append({
                 'author_name': parent_author,
                 'text': parent_text,
                 'color': 'good',
             })
 
         # Append target's comment
-        attachments.append({
+        message.append({
             'author_name': author_name,
             'text': text,
             'color': 'danger',
         })
 
         # Append footer
-        attachments.append({
+        message.append({
             'thumb_url': thumb_url,
             'footer': footer,
             'footer_icon': REDDIT_ICON,
@@ -105,7 +105,7 @@ class Reddit:
         })
 
         # return formatted message
-        return dict(attachments=attachments)
+        return message
 
     def _is_new(self, post):
         # if invalid dict return false
