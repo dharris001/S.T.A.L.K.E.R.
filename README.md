@@ -8,9 +8,9 @@ This project was created as a learning exercise for Python, consuming REST APIs,
 
 ### Application Structure
 
-`/services/runner.py` - Instantiates social classes based on social channel and calls required
+`/services/runner.py` - Instantiates social classes based on social channel and calls required  
 `/services/db.py` - Service for interacting with SQLite3 datastore  
-`/services/slack.py` - Starts a webhook and parses Slack Event API messages
+`/services/slack.py` - Starts a webhook and parses Slack Event API messages  
 `/services/commands.py` - Available commands for interacting with the app methods  
 `/social` - Contains social classes with respective logic  
 `/datastore` - Empty directory to bind sqlite3 docker data for persistence.  
