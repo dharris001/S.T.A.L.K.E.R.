@@ -6,14 +6,15 @@ from . import slack
 
 class Runner:
 
-    def __init__(self, platform, account, channel):
+    def __init__(self, platform, account, channel, team):
         # logging
-        print(f'{platform} -- {account} -- {channel}')
+        print(f'{platform} -- {account} -- {channel} -- {team}')
 
         # store account and platform
         self.platform = platform
         self.account = account
         self.channel = channel
+        self.team = team
 
     def stalk(self):
         # fallback if scrape fails
@@ -36,11 +37,11 @@ class Runner:
 
         except Exception as e:
             error_string = str(e)
-            error_message = f'{self.platform}/{self.account}: {error_string}'
+            error_message = f'{self.platform}/{self.account}/{self.team}: {error_string}'
             print(error_message)
 
         # Iterate through posts returned from scrape
         # build message and post to slack
         for post in post_list:
             message = social.message(post)
-            slack.post_message(message, self.channel)
+            slack.post_message(message, self.channel, self.team)
