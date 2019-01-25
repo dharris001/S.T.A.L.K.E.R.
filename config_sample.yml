@@ -1,14 +1,7 @@
-social_channels:
-  reddit:
-    # - "username"
-  twitter:
-    # - "username"
-  instagram:
-    # - "username"
-
 auth:
   slack:
-    webhook_url: ""
+    signing_url: ""
+    bot_token: ""
   twitter:
     api_key: ""
     secret_key: ""

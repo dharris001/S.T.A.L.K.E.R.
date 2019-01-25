@@ -1,12 +1,10 @@
 # import from system
 import time
-import json
 
 # iimport from dependencies
 import requests
-import yaml
 
-# import config
+# import from app
 from .. import config
 
 # module constants
@@ -17,15 +15,12 @@ SLEEP_TIME = config['app']['sleep_time']
 class Instagram:
 
     def __init__(self, user):
-
         # initialize class props
         self.user = user
 
     def scrape(self):
-
         # use a session to store auth cookies
         with requests.Session() as session:
-
             # login information
             login_username = config['auth']['instagram']['username']
             login_password = config['auth']['instagram']['password']
@@ -33,7 +28,7 @@ class Instagram:
 
             # retrieve and set auth cookies
             req = session.get(AUTH_URL)
-            headers = {'referer': "https://www.instagram.com/accounts/login/"}
+            headers = {'referer': 'https://www.instagram.com/accounts/login/'}
             headers['x-csrftoken'] = req.cookies['csrftoken']
             session.post(AUTH_URL_MAIN, data=login_dict, headers=headers)
 
@@ -53,24 +48,15 @@ class Instagram:
 
 
     def message(self, post):
-
         # storing json objects for building message
         latest_post = post['node']
         shortcode = latest_post["shortcode"]
-        text = f'https://www.instagram.com/p/{shortcode}'
-
-        # build message
-        message = {
-            'text': text,
-            'unfurl_links': True,
-            'unfurl_media': True
-        }
+        message = f'https://www.instagram.com/p/{shortcode}'
 
         # return formatted message
         return message
 
     def _is_new(self, post):
-
         # if invalid dict return false
         if 'taken_at_timestamp' not in post['node']:
             return False

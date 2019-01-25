@@ -1,52 +1,32 @@
 # import from system
+import threading
 import time
-import sys
-
-# import from dependencies
-import yaml
 
 # import from app
-from .services.messaging import Messaging
 from .services.runner import Runner
+from .services import slack
+from .services import db
 from . import config
 
+# constants
+SLEEP_TIME = config['app']['sleep_time']
 
 def main():
-    # variable declerations
-    social_channels = config['social_channels']
-    sleep_time = config['app']['sleep_time']
-    messaging = Messaging()
-    start_message = 'now stalking...'
-    exit_message = 'ending stalk...'
+    # start webhook server
+    webhook_server = threading.Thread(target=slack.webhook)
+    webhook_server.start()
 
-    # output running status
-    messaging.post({ 'text': start_message })
+    # begin stalking loop
+    while True:
+        accounts = db.get_all_accounts()
 
-    # loop through runners until killed
-    try:
-        while True:
-            # start cycle of runners
-            initialize_runners(social_channels)
-            # wait for next cycle
-            time.sleep(sleep_time)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        # output ending status
-        messaging.post({ 'text': exit_message })
+        # start a runner for each account
+        for index, platform, account, channel in accounts:
+            runner = Runner(platform, account, channel)
+            runner.stalk()
 
-    # graceful exit
-    sys.exit(0)
-
-
-def initialize_runners(social_channels):
-
-    # start a runner for each user in a channel
-    for channel, users in social_channels.items():
-        if isinstance(users, list):
-            for user in users:
-                runner = Runner(channel, user)
-                runner.stalk()
+        # wait for next cycle
+        time.sleep(SLEEP_TIME)
 
 if __name__ == "__main__":
     main()
