@@ -1,13 +1,12 @@
 auth:
   slack:
-    signing_url: ""
-    bot_token: ""
+    client_id: ""
+    client_secret: ""
+    signing_secret: ""
+    oauth_scope: "bot"
   twitter:
     api_key: ""
     secret_key: ""
-  instagram:
-    username: ""
-    password: ""
 
 app:
-  sleep_time: 2000
+  sleep_time: 36000

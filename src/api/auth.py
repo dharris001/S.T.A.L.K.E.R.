@@ -13,7 +13,7 @@ CLIENT_SECRET = config['auth']['slack']['client_secret']
 OAUTH_SCOPE = config['auth']['slack']['oauth_scope']
 
 # endpoints
-@api_server.route("/slack/install")
+@api_server.route('/slack/install')
 def _install():
     output = '''
         <a href="https://slack.com/oauth/authorize?scope={0}&client_id={1}">
