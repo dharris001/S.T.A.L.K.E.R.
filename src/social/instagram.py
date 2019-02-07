@@ -1,47 +1,45 @@
 # import from system
+import json
 import time
 
-# iimport from dependencies
+# import from dependencies
 import requests
+from bs4 import BeautifulSoup
 
 # import from app
 from .. import config
 
 # module constants
-AUTH_URL = 'https://www.instagram.com/accounts/login/'
-AUTH_URL_MAIN = AUTH_URL + 'ajax/'
+BASE_URL = 'https://www.instagram.com/'
 SLEEP_TIME = config['app']['sleep_time']
 
 class Instagram:
 
-    def __init__(self, user):
+    def __init__(self, handle):
         # initialize class props
-        self.user = user
+        self.handle = handle
+
+    def __extract_json(self, html):
+        soup = BeautifulSoup(html, 'html.parser')
+        body = soup.find('body')
+        script_tag = body.find('script')
+        raw_string = script_tag.text.strip().replace('window._sharedData =', '').replace(';', '')
+        return json.loads(raw_string)
 
     def scrape(self):
+        new_posts = []
+
         # use a session to store auth cookies
         with requests.Session() as session:
-            # login information
-            login_username = config['auth']['instagram']['username']
-            login_password = config['auth']['instagram']['password']
-            login_dict = {'username': login_username, 'password': login_password}
-
-            # retrieve and set auth cookies
-            req = session.get(AUTH_URL)
-            headers = {'referer': 'https://www.instagram.com/accounts/login/'}
-            headers['x-csrftoken'] = req.cookies['csrftoken']
-            session.post(AUTH_URL_MAIN, data=login_dict, headers=headers)
-
-            # build request url
-            user_url = f'https://www.instagram.com/{self.user}?__a=1'
+            profile_url = BASE_URL + '{handle}'.format(handle=self.handle)
 
             # request user posts
-            response = session.get(user_url)
-            data = response.json()
+            response = session.get(profile_url)
+            data = self.__extract_json(response.text)
 
-        # filter list of new posts
-        posts = data['graphql']['user']['edge_owner_to_timeline_media']['edges']
-        new_posts = list(filter(self._is_new, posts))
+            # filter list of new posts
+            posts = data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['edges']
+            new_posts = list(filter(self._is_new, posts))
 
         # return list of new raw posts
         return new_posts
@@ -51,7 +49,7 @@ class Instagram:
         # storing json objects for building message
         latest_post = post['node']
         shortcode = latest_post["shortcode"]
-        message = f'https://www.instagram.com/p/{shortcode}'
+        message = f'{BASE_URL}p/{shortcode}'
 
         # return formatted message
         return message

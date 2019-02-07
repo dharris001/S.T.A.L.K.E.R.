@@ -5,9 +5,6 @@ auth:
   twitter:
     api_key: ""
     secret_key: ""
-  instagram:
-    username: ""
-    password: ""
 
 app:
   sleep_time: 2000
