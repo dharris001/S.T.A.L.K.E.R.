@@ -28,18 +28,16 @@ class Instagram:
 
     def scrape(self):
         new_posts = []
+        profile_url = BASE_URL + f'{self.handle}'
 
-        # use a session to store auth cookies
-        with requests.Session() as session:
-            profile_url = BASE_URL + '{handle}'.format(handle=self.handle)
+        # request user posts
+        response = requests.get(profile_url)
+        data = self.__extract_json(response.text)
 
-            # request user posts
-            response = session.get(profile_url)
-            data = self.__extract_json(response.text)
-
-            # filter list of new posts
-            posts = data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['edges']
-            new_posts = list(filter(self._is_new, posts))
+        # filter list of new posts
+        user_profile = data['entry_data']['ProfilePage'][0]['graphql']['user']
+        posts = user_profile['edge_owner_to_timeline_media']['edges']
+        new_posts = list(filter(self._is_new, posts))
 
         # return list of new raw posts
         return new_posts
